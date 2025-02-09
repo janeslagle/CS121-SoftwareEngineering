@@ -103,11 +103,11 @@ public class ListGraph implements Graph {
         ListGraph unionedGraph = new ListGraph();
 
         // First add all nodes from current graph into new unioned graph
-        // Then add all edges from current graph, use succ with nodes to add all edges for each node
         for (String n: this.nodes()) {
             unionedGraph.addNode(n);
         }
 
+        // Then add all edges from current graph, use succ with nodes to add all edges for each node
         for (String n: this.nodes()) {
             for (String succNode: this.succ(n)) {
                 unionedGraph.addEdge(n, succNode);
