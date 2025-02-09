@@ -1,16 +1,15 @@
 import java.io.StringBufferInputStream;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
 
-    // Run "java -ea Main" to run with assertions enabled (If you run
-    // with assertions disabled, the default, then assert statements
-    // will not execute!)
+	// Run "java -ea Main" to run with assertions enabled (If you run
+	// with assertions disabled, the default, then assert statements
+	// will not execute!)
 
 	// test1() - test10() for ListGraph
 	// Tests addNode
-    public static void test1() {
+	public static void test1() {
 		Graph g = new ListGraph();  // Create new graph
 
 		assert !g.hasNode("a");  // Make sure graph that should be empty doesn't have node before actually add it
@@ -22,7 +21,7 @@ public class Main {
 		assert g.hasNode("b");
 		assert !g.hasNode("e");  // Make sure only have nodes that should be in graph
 		assert !g.hasNode("m");
-    }
+	}
 
 	// Tests addEdge
 	public static void test2() {
@@ -328,7 +327,227 @@ public class Main {
 		assert !g2.connected("b", "c");
 	}
 
-	// test11() - test() for EdgeGraphAdapter
+	// test11() - test18() for EdgeGraphAdapter
+	// Tests addEdge
+	public static void test11() {
+		Graph g = new ListGraph();                // Create new graph
+		EdgeGraph eg = new EdgeGraphAdapter(g);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		Edge e1 = new Edge("a", "b");     // Create some edges to add to eg
+		Edge e2 = new Edge("b", "c");
+
+		assert eg.addEdge(e1);                    // Add edges to eg
+		assert eg.addEdge(e2);
+
+		assert eg.hasEdge(e1);                    // Make sure edges were actually added
+		assert eg.hasEdge(e2);
+	}
+
+	// Tests hasNode
+	public static void test12() {
+		Graph g = new ListGraph();                // Create new graph
+		EdgeGraph eg = new EdgeGraphAdapter(g);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		Edge e1 = new Edge("a", "b");     // Create some edges to add to eg
+		Edge e2 = new Edge("b", "c");
+
+		assert eg.addEdge(e1);                    // Add edges to eg
+		assert eg.addEdge(e2);
+
+		assert eg.hasNode("a");                // Nodes should be added since an edge containing them has been added to eg
+		assert eg.hasNode("b");
+		assert eg.hasNode("c");
+	}
+
+	// Tests removeEdge
+	public static void test13() {
+		Graph g = new ListGraph();                // Create new graph
+		EdgeGraph eg = new EdgeGraphAdapter(g);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		Edge e1 = new Edge("a", "b");     // Create some edges to add to eg
+		Edge e2 = new Edge("b", "c");
+
+		assert eg.addEdge(e1);                    // Add edges to eg
+		assert eg.addEdge(e2);
+
+		assert eg.hasEdge(e1);                    // Make sure edges were actually added
+		assert eg.hasEdge(e2);
+
+		assert eg.removeEdge(e1);                 // Make sure edges were actually removed
+
+		// e1 was last edge from a so check that it removed node a
+		// e1 was also last edge to b so make sure it removed node b
+		// since node b was removed, that means that edge e2 should also not be there anymore...
+		assert !eg.hasNode("a");
+		assert !eg.hasEdge(e2);
+		assert !eg.hasNode("b");
+	}
+
+	// Tests outEdges
+	public static void test14() {
+		Graph g = new ListGraph();                // Create new graph
+		EdgeGraph eg = new EdgeGraphAdapter(g);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		Edge e1 = new Edge("a", "b");     // Create some edges to add to eg
+		Edge e2 = new Edge("b", "c");
+		Edge e3 = new Edge("a", "d");
+		Edge e4 = new Edge("a", "e");
+		Edge e5 = new Edge("b", "e");
+
+		assert eg.addEdge(e1);                    // Add edges to eg
+		assert eg.addEdge(e2);
+		assert eg.addEdge(e3);
+		assert eg.addEdge(e4);
+		assert eg.addEdge(e5);
+
+		// Check that outEdges is correct for both a, b nodes
+		assert eg.outEdges("a").size() == 3;
+		assert eg.outEdges("a").contains(e1);
+		assert eg.outEdges("a").contains(e3);
+		assert eg.outEdges("a").contains(e4);
+
+		// Make sure that outEdges for one node doesn't include any for another node
+		assert !eg.outEdges("a").contains(e2);
+
+		assert eg.outEdges("b").size() == 2;
+		assert eg.outEdges("b").contains(e2);
+		assert eg.outEdges("b").contains(e5);
+	}
+
+	// Tests inEdges
+	public static void test15() {
+		Graph g = new ListGraph();                // Create new graph
+		EdgeGraph eg = new EdgeGraphAdapter(g);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		Edge e1 = new Edge("a", "c");     // Create some edges to add to eg
+		Edge e2 = new Edge("b", "c");
+		Edge e3 = new Edge("d", "c");
+
+		assert eg.addEdge(e1);                    // Add edges to eg
+		assert eg.addEdge(e2);
+		assert eg.addEdge(e3);
+
+		// Check that inEdges is correct for c node
+		assert eg.inEdges("c").size() == 3;
+		assert eg.inEdges("c").contains(e1);
+		assert eg.inEdges("c").contains(e2);
+		assert eg.inEdges("c").contains(e3);
+
+		// Make sure that inEdges is empty for noes that are not dst node for any edge
+		assert eg.inEdges("a").size() == 0;
+	}
+
+	// Tests edges
+	public static void test16() {
+		Graph g = new ListGraph();                // Create new graph
+		EdgeGraph eg = new EdgeGraphAdapter(g);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		Edge e1 = new Edge("a", "c");     // Create some edges to add to eg
+		Edge e2 = new Edge("b", "c");
+		Edge e3 = new Edge("d", "c");
+		Edge e4 = new Edge("a", "b");
+		Edge e5 = new Edge("a", "e");
+		Edge e6 = new Edge("d", "b");
+		Edge e7 = new Edge("d", "e");
+
+		assert eg.addEdge(e1);                    // Add edges to eg
+		assert eg.addEdge(e2);
+		assert eg.addEdge(e3);
+		assert eg.addEdge(e4);
+		assert eg.addEdge(e5);
+		assert eg.addEdge(e6);
+		assert eg.addEdge(e7);
+
+		// Make sure edges() list has all of the added edges in it
+		assert eg.edges().size() == 7;
+		assert eg.edges().contains(e1);
+		assert eg.edges().contains(e2);
+		assert eg.edges().contains(e3);
+		assert eg.edges().contains(e4);
+		assert eg.edges().contains(e5);
+		assert eg.edges().contains(e6);
+		assert eg.edges().contains(e7);
+	}
+
+	// Tests union
+	public static void test17() {
+		Graph g1 = new ListGraph();                // Create new graph
+		EdgeGraph eg1 = new EdgeGraphAdapter(g1);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		Edge e1 = new Edge("a", "c");     // Create some edges to add to eg
+		Edge e2 = new Edge("b", "c");
+		Edge e3 = new Edge("d", "c");
+
+		assert eg1.addEdge(e1);                    // Add edges to eg
+		assert eg1.addEdge(e2);
+		assert eg1.addEdge(e3);
+
+		// Test unioning eg1 with another empty eg graph
+		Graph g2 = new ListGraph();
+		EdgeGraph eg2 = new EdgeGraphAdapter(g2);
+
+		EdgeGraph unionedGraph1 = eg1.union(eg2);
+		assert unionedGraph1.hasNode("a");
+		assert unionedGraph1.hasNode("b");
+		assert unionedGraph1.hasNode("c");
+		assert unionedGraph1.hasNode("d");
+
+		assert unionedGraph1.hasEdge(e1);
+		assert unionedGraph1.hasEdge(e2);
+		assert unionedGraph1.hasEdge(e3);
+
+		// Now test unioning with a non-empty eg graph
+		Graph g3 = new ListGraph();
+		EdgeGraph eg3 = new EdgeGraphAdapter(g3);
+
+		eg3.addEdge(e1);
+		eg3.addEdge(e2);
+		eg3.addEdge(e3);
+
+		Edge e4 = new Edge("a", "e");
+		Edge e5 = new Edge("f", "g");
+
+		eg3.addEdge(e4);
+		eg3.addEdge(e5);
+
+		EdgeGraph unionedGraph2 = eg1.union(eg3);
+
+		assert unionedGraph2.hasNode("a");
+		assert unionedGraph2.hasNode("b");
+		assert unionedGraph2.hasNode("c");
+		assert unionedGraph2.hasNode("d");
+		assert unionedGraph2.hasNode("e");
+		assert unionedGraph2.hasNode("f");
+		assert unionedGraph2.hasNode("g");
+
+		assert unionedGraph2.hasEdge(e1);
+		assert unionedGraph2.hasEdge(e2);
+		assert unionedGraph2.hasEdge(e3);
+		assert unionedGraph2.hasEdge(e4);
+		assert unionedGraph2.hasEdge(e5);
+	}
+
+	// Tests hasPath
+	public static void test18() {
+		Graph g = new ListGraph();                // Create new graph
+		EdgeGraph eg = new EdgeGraphAdapter(g);   // Use the ListGraph to create new EdgeGraphAdapter case
+
+		List<Edge> emptyList = Collections.<Edge> emptyList();
+
+		assert eg.hasPath(emptyList);             // Empty lists should always return true
+
+		// Now test that not having all edges in graph makes it false
+		Edge e1 = new Edge("a", "b");
+		Edge e2 = new Edge("b", "c");
+		eg.addEdge(e1);
+
+		List<Edge> invalidEdges = Arrays.asList(e1, e2);
+		assert !eg.hasPath(invalidEdges);
+
+		// Now test having valid edges
+		eg.addEdge(e2);   // invalidEdges list should be valid now!
+		assert eg.hasPath(invalidEdges);
+	}
 
     public static void main(String[] args) {
 		// Tests for ListGraph
@@ -344,5 +563,13 @@ public class Main {
 		// test10();
 
 		// Tests for EdgeGraphAdapter
+		// test11();
+		// test12();
+		// test13();
+		// test14();
+		// test15();
+		// test16();
+		// test17();
+		// test18();
     }
 }
