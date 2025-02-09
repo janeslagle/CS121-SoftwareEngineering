@@ -37,19 +37,11 @@ public class EdgeGraphAdapter implements EdgeGraph {
 
         g.removeEdge(srcNode, dstNode);
 
-        if (g.succ(srcNode).isEmpty()) {
+        if (g.succ(srcNode).isEmpty() || g.pred(srcNode).isEmpty()) {
             g.removeNode(srcNode);
         }
 
-        if (g.pred(srcNode).isEmpty()) {
-            g.removeNode(srcNode);
-        }
-
-        if (g.succ(dstNode).isEmpty()) {
-            g.removeNode(dstNode);
-        }
-
-        if (g.pred(dstNode).isEmpty()) {
+        if (g.succ(dstNode).isEmpty() || g.pred(dstNode).isEmpty()) {
             g.removeNode(dstNode);
         }
 
